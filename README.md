@@ -14,10 +14,10 @@ One of the major problems is that there is too much data for a clear visualisati
 As previously stated, there is already a dataset with information about the interactions of species and what of what type they are; i.e. predatory, parasitic or mutualistic. This will be the basis for the visualisations. This API that allows for direct usage of the data in a JSON format. However, I would like to create a static JSON file for practical reasons. This will be done by downloading the data from github.com/jhpoelen/eol-globi-data/ and perhaps adjusting it in python to fit the needs of the visualisation. Also some basic information about the species is needed, including the common names, and may be added to the JSON file at this stage. Again, this data can be also obtained directly from a specific webpage.
 
 Potential data sources are the following:
-* [iNaturalist](www.inaturalist.org)
-* [GloBI](www.globalbioticinteractions.org)
-* [Wikipedia](www.wikipedia.org)
-* [Ecyclopedia of Life](www.eol.org)
+* [iNaturalist](http://www.inaturalist.org)
+* [GloBI](https://www.globalbioticinteractions.org)
+* [Wikipedia](http://www.wikipedia.org)
+* [Encyclopedia of Life](https://www.eol.org)
 
 #### Proposed visualisation
 The visualisation will be on a webpage. The first thing you should see will be a big network map showing the overwhelming amount of interactions that take place between all species. Hovering over the lines (representing the interaction) or the dots (representing species) should highlight these and the immediately linked species and interactions.
