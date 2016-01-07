@@ -21,7 +21,7 @@ Potential data sources are the following:
 
 #### Proposed visualisation
 The visualisation will be on a webpage. The first thing you should see will be a big network map showing the overwhelming amount of interactions that take place between all species. Hovering over the lines (representing the interaction) or the dots (representing species) should highlight these and the immediately linked species and interactions.
-![](doc/NetworkSketch.jpg =200x)
+![](doc/NetworkSketch.jpg)
 Filters will be available to view only a selection of species and interactions, e.g. using a search box to look for specific species, a drop-down list and checkboxes to search for certain types of interactions.
 Clicking on a species will update a small section of the webpage showing some basic information about the species such as its taxonomy and specific habits.
 A second page will show a similar visualisation to the first one but now focused on the loss of a species. Clicking a dot (representing a species) will recolor the lines and dots to show the effect of the loss on other species, discriminating between positive and negative effects. Also a counter on top of the visualisation will show the number of species directly affected and the number of species indirectly affected.
