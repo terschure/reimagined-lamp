@@ -9,16 +9,16 @@ There are several visualisation types that can be used for this:
 
 As the dataset contains data for many different species and many interactions; it may be wise to focus on a standard network map with filtering options such as habitat and the type of interactions.
 
-![](doc/NetworkSketch.jpg =200)
+![](doc/NetworkSketch.jpg =200x)
 
 # Day 2
 Setting up folder structure and deciding what data is needed. Ideally, the user may be allowed to filter on the specific species, their habitat or their interactions. That means that per species there should be a JSON object containing this information, however due to the size of the dataset it may be better to use the API.
 Made some more sketches.
 
-![](doc/BundleSketch.jpg =200)
+![](doc/BundleSketch.jpg =200x)
 
 # Day 3
 Fiddling with an example d3 source code from https://github.com/jhpoelen/eol-globi-js/blob/master/examples
 but is very slow - possibly due to API as loading time changes when I change search query - so definitely going to make my own JSON file and minimise the size.
 
-![](doc/BipartiteFiddle.png =200)
+![](doc/BipartiteFiddle.png =200x)
