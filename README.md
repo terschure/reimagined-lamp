@@ -19,6 +19,9 @@ Potential data sources are the following:
 * [Wikipedia](http://www.wikipedia.org)
 * [Encyclopedia of Life](https://www.eol.org)
 
+The interaction data is downloaded from the [GloBI API](https://github.com/jhpoelen/eol-globi-data/wiki/API#interactions). Only data from the 'active' interaction types are used; e.g. the interaction type "eats" and not "getsEatenBy", and "isParasiteOf" and not "hasParasite". This halves the amount of data without actually losing interactions.
+
+
 #### Proposed visualisation
 The visualisation will be on a webpage. The first thing you should see will be a big network map showing the overwhelming amount of interactions that take place between all species. Hovering over the lines (representing the interaction) or the dots (representing species) should highlight these and the immediately linked species and interactions.
 ![](doc/NetworkSketch.jpg)

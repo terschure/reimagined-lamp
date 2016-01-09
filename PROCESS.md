@@ -12,7 +12,7 @@ As the dataset contains data for many different species and many interactions; i
 ![](doc/NetworkSketch.jpg)
 
 # Day 2
-Setting up folder structure and deciding what data is needed. Ideally, the user may be allowed to filter on the specific species, their habitat or their interactions. That means that per species there should be a JSON object containing this information, however due to the size of the dataset it may be better to use the API.
+Setting up folder structure and deciding what data is needed. Ideally, the user may be allowed to filter on the specific species, their (taxonomic) kingdom, their habitat or their interactions. That means that per species there should be a JSON object containing this information, however due to the size of the dataset it may be better to use the API.
 Made some more sketches.
 
 ![](doc/BundleSketch.jpg)
@@ -22,3 +22,6 @@ Fiddling with an example d3 source code from https://github.com/jhpoelen/eol-glo
 but is very slow - possibly due to API as loading time changes when I change search query - so definitely going to make my own JSON file and minimise the size.
 
 ![](doc/BipartiteFiddle.png)
+
+# Day 4
+Decided to not use the JSON format provided by the [API](http://api.globalbioticinteractions.org/interaction?type=json.v2) as atom tends to crash. Instead I downloaded the CSV files for each 'active' interaction type; e.g. the interaction type "isParasiteOf" instead of "hasParasite" via the API like this: http://api.globalbioticinteractions.org/interaction?interactionType=isParasiteOf&type=csv. This halves the amount of data without actually losing interactions.
