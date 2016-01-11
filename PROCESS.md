@@ -25,3 +25,6 @@ but is very slow - possibly due to API as loading time changes when I change sea
 
 # Day 4
 Decided to not use the JSON format provided by the [API](http://api.globalbioticinteractions.org/interaction?type=json.v2) as atom tends to crash. Instead I downloaded the CSV files for each 'active' interaction type; e.g. the interaction type "isParasiteOf" instead of "hasParasite" via the API like this: http://api.globalbioticinteractions.org/interaction?interactionType=isParasiteOf&type=csv. This halves the amount of data without actually losing interactions.
+
+# Day 5
+Mainly got stuck on creating the nodes and links in d3 and adding a force layout. 

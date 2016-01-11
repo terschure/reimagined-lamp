@@ -68,13 +68,13 @@ for each in reader:
         # make new object if species is not yet in datapoints
         if each['sourceID'] not in datapoints:
             data = {}
-            data['speciesID'] = each['sourceID']
+            data['id'] = each['sourceID']
             data['speciesName'] = each['sourceName']
             data['path'] = each['sourcePath']
             nodes.append(data)
         elif each['targetID'] not in datapoints:
             data = {}
-            data['speciesID'] = each['targetID']
+            data['id'] = each['targetID']
             data['speciesName'] = each['targetName']
             data['path'] = each['targetPath']
             nodes.append(data)

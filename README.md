@@ -28,3 +28,9 @@ The visualisation will be on a webpage. The first thing you should see will be a
 Filters will be available to view only a selection of species and interactions, e.g. using a search box to look for specific species, a drop-down list and checkboxes to search for certain types of interactions.
 Clicking on a species will update a small section of the webpage showing some basic information about the species such as its taxonomy and specific habits.
 A second page will show a similar visualisation to the first one but now focused on the loss of a species. Clicking a dot (representing a species) will recolor the lines and dots to show the effect of the loss on other species, discriminating between positive and negative effects. Also a counter on top of the visualisation will show the number of species directly affected and the number of species indirectly affected.
+
+# Sources
+For information about making network visualisations in d3 I consulted:
+1. [the D3 wiki ](https://github.com/mbostock/d3/wiki/Force-Layout)
+2. Mike Bostock's code for a [force-directed graph](http://bl.ocks.org/mbostock/4062045)
+3. ...
