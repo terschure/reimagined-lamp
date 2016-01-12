@@ -27,4 +27,8 @@ but is very slow - possibly due to API as loading time changes when I change sea
 Decided to not use the JSON format provided by the [API](http://api.globalbioticinteractions.org/interaction?type=json.v2) as atom tends to crash. Instead I downloaded the CSV files for each 'active' interaction type; e.g. the interaction type "isParasiteOf" instead of "hasParasite" via the API like this: http://api.globalbioticinteractions.org/interaction?interactionType=isParasiteOf&type=csv. This halves the amount of data without actually losing interactions.
 
 # Day 5
-Mainly got stuck on creating the nodes and links in d3 and adding a force layout. 
+Mainly got stuck on creating the nodes and links in d3 and adding a force layout.
+
+# Day 6
+Found a probable explanation for my troubles with plotting the data in a network, namely dataset issues such as interactions (links) in which one of the species (source or target) has no id. Therefore I made a small test.json file to continue making a network visualisation, implementing a force layout and creating a tooltip.
+![](doc/TestNetwork.png)

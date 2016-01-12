@@ -7,6 +7,7 @@
 #  4. species A preysOn species B
 #  5. species A is a vectorOf species B
 #
+# TODO: make sure there are no double species!!
 # Made by Anneke ter Schure
 
 # imports
