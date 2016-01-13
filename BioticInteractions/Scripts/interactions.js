@@ -10,12 +10,11 @@
 
 var data;
 
-d3.json("/Data/test.json", function(error, json) {
+d3.json("/Data/bioInteractions2.json", function(error, json) {
     if (error) return console.warn(error);
-    var options = { width: 1000, height: 500 };
+    var options = { width: 1000, height: 1000 };
     Network(options, json);
 });
-
 
 var Network = function(options, data) {
     console.log(data)
@@ -23,6 +22,21 @@ var Network = function(options, data) {
     var height, network, update, width;
     width = options.width;
     height = options.height;
+
+    // for debugging purposes
+    data.links.forEach(function(link, index, list) {
+        console.log('First: ' + data.nodes[link.source])
+        console.log('Source: ' + link.source)
+        console.log('Try: ' + link.source)
+        if (typeof data.nodes[link.source] === 'undefined') {
+            console.log('undefined source', link);
+        }
+        else if (typeof data.nodes[link.target] === 'undefined') {
+            console.log('undefined target', link);
+        }
+        console.log(data.nodes[link.source])
+        console.log(link.source)
+    });
 
     var tooldiv = d3.select("body").append("div")
         .attr("class", "tooltip")
@@ -39,9 +53,9 @@ var Network = function(options, data) {
         var sourceNode = data.nodes.filter(function(n) {
             return n.id === e.source;
         })[0],
-            targetNode = data.nodes.filter(function(n) {
-                return n.id === e.target;
-            })[0];
+        targetNode = data.nodes.filter(function(n) {
+            return n.id === e.target;
+        })[0];
 
         edges.push({
             source: sourceNode,
@@ -49,13 +63,14 @@ var Network = function(options, data) {
             interaction: e.interaction
         });
     });
+    console.log(edges)
 
     var force = d3.layout.force()
         .nodes(data.nodes)
         .links(edges)
         .size([width, height])
-        .distance(50)
-        .charge([-500])
+        .distance(40)
+        .charge([-10])
         .start();
 
     // create new div element containing svg element
@@ -85,7 +100,23 @@ var Network = function(options, data) {
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; })
             .style("stroke", "red" )
-            .style("stroke-opacity", ".3");
+            .style("stroke-width", 2)
+            .style("stroke-opacity", ".2")
+            .on("mouseover", function(d) {
+                tooldiv.transition()
+                    .duration(200)
+                    .style("opacity", .7);
+                console.log(d.source.speciesName + ' is a ' + d.interaction + ' of ' + d.target.speciesName)
+                tooldiv.html(d.source.speciesName + ' is a ' + d.interaction + ' of ' + d.target.speciesName)
+                    .style("left", (d3.event.x) + "px")
+                    .style("top", (d3.event.y - 30) + "px");
+            })
+            .on("mouseout", function(d) {
+                tooldiv.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            });
+
 
         // create the nodes to sit on top of the links
         var nodesG = svg.append("g")

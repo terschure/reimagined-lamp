@@ -32,3 +32,6 @@ Mainly got stuck on creating the nodes and links in d3 and adding a force layout
 # Day 6
 Found a probable explanation for my troubles with plotting the data in a network, namely dataset issues such as interactions (links) in which one of the species (source or target) has no id. Therefore I made a small test.json file to continue making a network visualisation, implementing a force layout and creating a tooltip.
 ![](doc/TestNetwork.png)
+
+# Day 7
+Finally fixed the dataset! There was one tiny link that led to a node that wasn't there. Also added a tooltip to the edges/links. ![](doc/FirstBigNetwork.png)
