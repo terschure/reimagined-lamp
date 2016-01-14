@@ -34,4 +34,15 @@ Found a probable explanation for my troubles with plotting the data in a network
 ![](doc/TestNetwork.png)
 
 # Day 7
-Finally fixed the dataset! There was one tiny link that led to a node that wasn't there. Also added a tooltip to the edges/links. ![](doc/FirstBigNetwork.png)
+Finally fixed the dataset! There was one tiny link that led to a node that wasn't there. Also added a tooltip to the edges/links.
+![](doc/FirstBigNetwork.png)
+
+# Day 8
+Rendering is a bit slow due to the largeness of the dataset and the force simulation.
+![](doc/NetworkRendering.gif)
+There are several options to make this less of a problem:
+1. Set a maximum number of ticks for the force layout, thereby making the visualisation static
+
+2. Making the visualisation move faster towards an equilibrium
+
+3. Visualise the individual creation of the nodes and links; possibly on a given position

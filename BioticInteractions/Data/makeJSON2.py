@@ -33,6 +33,23 @@ for each in reader:
             data['id'] = each['sourceID']
             data['speciesName'] = each['sourceName']
             data['path'] = each['sourcePath']
+
+            # differentiate groups according to taxonomy
+            if 'Insecta' in each['sourcePath']:
+                data['group'] = 'Insects'
+            elif 'Mammalia' in each['sourcePath']:
+                data['group'] = 'Mammals'
+            elif 'Plantae' in each['sourcePath']:
+                data['group'] = 'Plants'
+            elif 'Fungi' in each['sourcePath']:
+                data['group'] = 'Fungi'
+            elif 'Viruses' in each['sourcePath']:
+                data['group'] = 'Viruses'
+            elif 'Aves' in each['sourcePath']:
+                data['group'] = 'Birds'
+            else:
+                data['group'] = 'remaining'
+
             if data not in nodes:
                 nodes.append(data)
         if each['targetID'] not in nodes:
@@ -40,6 +57,21 @@ for each in reader:
             data['id'] = each['targetID']
             data['speciesName'] = each['targetName']
             data['path'] = each['targetPath']
+
+            # differentiate groups according to taxonomy
+            if 'Insecta' in each['targetPath']:
+                data['group'] = 'Insects'
+            elif 'Mammalia' in each['targetPath']:
+                data['group'] = 'Mammals'
+            elif 'Plantae' in each['targetPath']:
+                data['group'] = 'Plants'
+            elif 'Fungi' in each['targetPath']:
+                data['group'] = 'Fungi'
+            elif 'Viruses' in each['targetPath']:
+                data['group'] = 'Viruses'
+            elif 'Aves' in each['targetPath']:
+                data['group'] = 'Birds'
+
             if data not in nodes:
                 nodes.append(data)
 

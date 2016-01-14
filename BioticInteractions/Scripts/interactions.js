@@ -12,42 +12,26 @@ var data;
 
 d3.json("/Data/bioInteractions2.json", function(error, json) {
     if (error) return console.warn(error);
-    var options = { width: 1000, height: 1000 };
-    Network(options, json);
+    Network(json);
 });
 
-var Network = function(options, data) {
-    console.log(data)
+var Network = function(data) {
     // set properties
     var height, network, update, width;
-    width = options.width;
-    height = options.height;
+    width = window.innerWidth;
+    height = window.innerHeight;
 
     // for debugging purposes
-    data.links.forEach(function(link, index, list) {
-        console.log('First: ' + data.nodes[link.source])
-        console.log('Source: ' + link.source)
-        console.log('Try: ' + link.source)
-        if (typeof data.nodes[link.source] === 'undefined') {
-            console.log('undefined source', link);
-        }
-        else if (typeof data.nodes[link.target] === 'undefined') {
-            console.log('undefined target', link);
-        }
-        console.log(data.nodes[link.source])
-        console.log(link.source)
-    });
+    // data.links.forEach(function(link, index, list) {
+    //     if (typeof data.nodes[link.source] === 'undefined') {
+    //         console.log('undefined source', link);
+    //     }
+    //     else if (typeof data.nodes[link.target] === 'undefined') {
+    //         console.log('undefined target', link);
+    //     }
+    // });
 
-    var tooldiv = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("position", "absolute")
-        .style("font", "11px sans-serif")
-        .style("padding", "4px")
-        .style("background", "lightsteelblue")
-        .style("border", "0px")
-        .style("border-radius", "8px")
-        .style("opacity", 0);
-
+    // create a list of source and target objects (instead of ID's) for the links
     var edges = [];
     data.links.forEach(function(e) {
         var sourceNode = data.nodes.filter(function(n) {
@@ -63,8 +47,8 @@ var Network = function(options, data) {
             interaction: e.interaction
         });
     });
-    console.log(edges)
 
+    // set force layout for physics simulation
     var force = d3.layout.force()
         .nodes(data.nodes)
         .links(edges)
@@ -73,11 +57,23 @@ var Network = function(options, data) {
         .charge([-10])
         .start();
 
-    // create new div element containing svg element
+    // create a tooltip div with settings
+    var tooldiv = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("font", "11px sans-serif")
+        .style("padding", "4px")
+        .style("background", "lightsteelblue")
+        .style("border", "0px")
+        .style("border-radius", "8px")
+        .style("opacity", 0);
+
+    // create new div element containing svg element for the network
     d3.select("body").append("div")
         .attr("id", "interactions")
             .attr("width", width)
             .attr("height", height);
+            // .style("background", "black");
 
     var svg = d3.select("#interactions").append("svg")
         .attr("class", "network")
@@ -99,19 +95,26 @@ var Network = function(options, data) {
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; })
-            .style("stroke", "red" )
+            .style("stroke", function(d) {
+                if (d.interaction == 'predator') { return "#e41a1c" }
+                else if (d.interaction == 'parasite') { return "#ff7f00" }
+                else if (d.interaction == 'pollinator') { return "#f781bf" }
+                else if (d.interaction == 'pathogen') { return "#984ea3" }
+                else if (d.interaction == 'vector') { return "#377eb8" }
+            })
             .style("stroke-width", 2)
-            .style("stroke-opacity", ".2")
+            .style("stroke-opacity", ".3")
             .on("mouseover", function(d) {
+                // show tooltip!
                 tooldiv.transition()
                     .duration(200)
-                    .style("opacity", .7);
-                console.log(d.source.speciesName + ' is a ' + d.interaction + ' of ' + d.target.speciesName)
+                    .style("opacity", '.7');
                 tooldiv.html(d.source.speciesName + ' is a ' + d.interaction + ' of ' + d.target.speciesName)
                     .style("left", (d3.event.x) + "px")
                     .style("top", (d3.event.y - 30) + "px");
             })
             .on("mouseout", function(d) {
+                // hide tooltip
                 tooldiv.transition()
                     .duration(500)
                     .style("opacity", 0);
@@ -132,14 +135,16 @@ var Network = function(options, data) {
             .style("stroke-width", 1.0)
             .call(force.drag)
             .on("mouseover", function(d) {
+                // show tooltip!
                 tooldiv.transition()
                     .duration(200)
-                    .style("opacity", .7);
+                    .style("opacity", '.7');
                 tooldiv.html(d.speciesName)
                     .style("left", (d3.event.x) + "px")
                     .style("top", (d3.event.y - 30) + "px");
             })
             .on("mouseout", function(d) {
+                // hide tooltip
                 tooldiv.transition()
                     .duration(500)
                     .style("opacity", 0);
@@ -156,6 +161,11 @@ var Network = function(options, data) {
                 .attr("cy", function(d) { return d.y; });
 
         });
+
+    // uncomment for a static network:
+    // force.start();
+    // for (var i = 10; i > 0; --i) force.tick();
+    // force.stop();
 
     };
 };

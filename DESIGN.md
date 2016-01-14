@@ -6,4 +6,4 @@ In order to show the vastness of the dataset and the interdependency of all livi
 
 #### Usability
 The main focus for the user interaction is the use of filters. However, there are also some other options to enhance the user experience and their options of exploring the data.
-Toggling between the proposed network map and for instance a chord diagram may enhance the users ability to find patterns in the data. This may be further enhanced by grouping the species data according to their taxonomy as it may well be that there are striking patterns of interactions between the groups.
+Toggling between the proposed network map and for instance a chord diagram may enhance the users ability to find patterns in the data. This may be further enhanced by grouping the species data according to their taxonomy as it may well be that there are striking patterns of interactions between the groups. Also the absolute number of interactions depicted is nice to be able to see.
