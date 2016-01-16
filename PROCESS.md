@@ -41,8 +41,13 @@ Finally fixed the dataset! There was one tiny link that led to a node that wasn'
 Rendering is a bit slow due to the largeness of the dataset and the force simulation.
 ![](doc/NetworkRendering.gif)
 There are several options to make this less of a problem:
+
 1. Set a maximum number of ticks for the force layout, thereby making the visualisation static
 
 2. Making the visualisation move faster towards an equilibrium
 
 3. Visualise the individual creation of the nodes and links; possibly on a given position
+
+# Day 9
+Restructured the interaction.js file to cope with filtering nodes and links. Added interactive element of double-click to highlight a species with its interactions. Also made a start with making a radial layout.
+![](doc/hardcodedFilter&InteractiveHighlight.png)

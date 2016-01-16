@@ -48,7 +48,7 @@ for each in reader:
             elif 'Aves' in each['sourcePath']:
                 data['group'] = 'Birds'
             else:
-                data['group'] = 'remaining'
+                data['group'] = 'Other'
 
             if data not in nodes:
                 nodes.append(data)
@@ -71,6 +71,8 @@ for each in reader:
                 data['group'] = 'Viruses'
             elif 'Aves' in each['targetPath']:
                 data['group'] = 'Birds'
+            else:
+                data['group'] = 'Other'
 
             if data not in nodes:
                 nodes.append(data)
@@ -96,6 +98,6 @@ datapoints["nodes"] = nodes
 datapoints["links"] = links
 
 # make outputfile
-with open('bioInteractions2.json', 'w') as outfile:
+with open('bioInteractions.json', 'w') as outfile:
      json.dump(datapoints, outfile, sort_keys = True, indent = 4,
      ensure_ascii=False)
