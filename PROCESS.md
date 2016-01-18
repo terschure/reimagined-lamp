@@ -51,3 +51,6 @@ There are several options to make this less of a problem:
 # Day 9
 Restructured the interaction.js file to cope with filtering nodes and links. Added interactive element of double-click to highlight a species with its interactions. Also made a start with making a radial layout.
 ![](doc/hardcodedFilter&InteractiveHighlight.png)
+
+# Day 10
+Fine-tuned the interactive highlight to also show the linked nodes, but spend most of my time figuring out how to create a working filtering system that updates the nodes and links in the graph according to selected checkboxes. Did not succeed yet. I did decide that I also want a legend and a small window with some details on the selected species; perhaps via eol.org as the dataset I'm using already works with their id codes.

@@ -7,13 +7,16 @@
 // data obtained from: http://api.globalbioticinteractions.org/interaction?bbox=3.36,50.75,7.23,53.59
 // http://api.globalbioticinteractions.org/interaction?type=json.v2
 //--------------------------------
-force = d3.layout.force();
-
 d3.json("/Data/bioInteractions.json", function(error, json) {
     if (error) return console.warn(error);
     data = json;
-    Network(data);
+    force = d3.layout.force();
+    setNetwork();
     d3.select("#header").style("visibility", "visible");
+    d3.select(".filters").style("visibility", "visible");
+
+    var speciesGroups = ["Insects", "Mammals", "Birds", "Plants", "Fungi", "Viruses", "Other"];
+    createFilters(speciesGroups, data);
 });
 
 window.onload = function () {
@@ -29,28 +32,29 @@ window.onload = function () {
         .style("border-radius", "8px")
         .style("opacity", 0);
 
-    // filterdiv = d3.select("body").append("div");
-    // filterdiv.append("input").attr("type", "checkbox")
-    //     .attr("id", "group")
-    //     .attr("class", "filters")
-    //     .html("checkbox");
+    filterdiv = d3.select("body").append("div");
+    filterdiv.text("FILTERS: ")
+        .attr("class", "filters");
 };
 
-var Network = function(data) {
-    // set properties; set layout to "radial" for a radial layout TODO
-    var layout = "force";
-    var height, network, update, width;
+var createFilters = function(speciesGroups, allData) {
+    d3.select(".filters").selectAll("input")
+        .data(speciesGroups)
+        .enter()
+        .append("label")
+            .attr("for", function(d) { return d; })
+            .text(function(d) { return d; })
+            .style("color", "white")
+        .append("input")
+            .attr("checked", true)
+            .attr("type", "checkbox")
+            .attr("id", function(d) { return d; })
+            .on("click", function (d) { return updateNetwork(); });
+};
+
+var setNetwork = function() {
     width = window.innerWidth;
     height = window.innerHeight;
-    // for debugging purposes
-    // data.links.forEach(function(link, index, list) {
-    //     if (typeof data.nodes[link.source] === 'undefined') {
-    //         console.log('undefined source', link);
-    //     }
-    //     else if (typeof data.nodes[link.target] === 'undefined') {
-    //         console.log('undefined target', link);
-    //     }
-    // });
 
     // create new div element containing svg element for the network
     d3.select("body").append("div")
@@ -58,14 +62,23 @@ var Network = function(data) {
             .attr("width", width)
             .attr("height", height);
 
-    var svg = d3.select("#interactions").append("svg")
+    svg = d3.select("#interactions").append("svg")
         .attr("class", "network")
             .attr("width", width)
             .attr("height", height);
 
-    Update();
-    updateLinks(svg, currentLinks);
-    updateNodes(svg, currentNodes);
+    // show all species and inderactions
+    currentNodes = data.nodes;
+    currentLinks = filterLinkData(data.links);
+    updateLinks(svg);
+    updateNodes(svg);
+    // layout can be "force" or "radial"
+    setLayout("force", width, height);
+};
+
+var setLayout = function(layout, width, height) {
+    // set properties; layout can be "force" or "radial"
+    var layout = "force";
 
     // set force layout for physics simulation
     force.nodes(currentNodes)
@@ -122,26 +135,46 @@ var Network = function(data) {
                 .attr("cy", function(d) { return d.y; });
         });
     };
-
 };
 
-var Update = function() {
-    currentNodes = filterNodeData(data.nodes);
-    currentLinks = filterLinkData(data.links, currentNodes);
+var updateNetwork = function() {
+    currentNodes = filterNodeData();
+    currentLinks = filterLinkData();
+    updateLinks(svg);
+    updateNodes(svg);
+    // layout can be "force" or "radial"
+    setLayout("force", width, height);
 };
 
-function filterNodeData(allNodes) {
-    var filteredNodes = allNodes;
-    filteredNodes = allNodes.filter( function(entry) {
-        return entry.group === 'Fungi'|| entry.group === 'Plants' || entry.group === 'Viruses';
+function filterNodeData() {
+    filteredNodes = [];
+
+    d3.selectAll("input").on("change", function() {
+        console.log("checked:", this.checked)
+        var id = this.id
+        console.log(id)
+
+        if(this.checked) {
+            var selection = [];
+            currentNodes.filter( function(entry) {
+                selection = entry.group === id;
+            });
+            return currentNodes.concat(selection);
+        }
+        else {
+            currentNodes.filter( function(entry) {
+                return entry.group !== id;
+            });
+        };
     });
+    console.log("Filtered: ", filteredNodes);
     return filteredNodes;
 };
 
-function filterLinkData(allLinks, currentNodes) {
+function filterLinkData() {
     // prepare data for links in the network
     var edges = [];
-    allLinks.forEach(function(e) {
+    data.links.forEach(function(e) {
         var sourceNode = currentNodes.filter(function(n) {
             return n.id === e.source;
         })[0],
@@ -160,17 +193,15 @@ function filterLinkData(allLinks, currentNodes) {
     return edges;
 };
 
-function updateLinks(svg, data) {
-    // var filteredData = [];
-    // data.forEach(function(e) {
-    //     if(e.source != 'undefined' && e.target != 'undefined') { filteredData.push(e) }
-    // });
+function updateLinks(svg) {
+    // remove existing links
+    d3.select("#links").remove();
 
     // create the links
     var linksG = svg.append("g")
         .attr("id", "links");
     link = linksG.selectAll("line.link")
-        .data(data);
+        .data(currentLinks);
     link.enter().append("line")
         .attr("class", "link")
         .attr("x1", function(d) { return d.source.x })
@@ -204,12 +235,15 @@ function updateLinks(svg, data) {
     link.exit().remove();
 };
 
-function updateNodes(svg, data) {
+function updateNodes(svg) {
+    // remove existing nodes
+    d3.select("#nodes").remove();
+
     // create the nodes to sit on top of the links
     var nodesG = svg.append("g")
         .attr("id", "nodes");
     node = nodesG.selectAll(".node")
-        .data(data, function(d) { return d.id });
+        .data(currentNodes, function(d) { return d.id });
     node.enter().append("circle")
         .attr("class", "node")
         .attr("id", function(d) { return d.id })
@@ -227,17 +261,12 @@ function updateNodes(svg, data) {
         .style("stroke-width", 1.0)
         .call(force.drag)
         .on("mouseover", tooltipNode)
-        .on("mouseout", function(d) {
-            // hide tooltip
-            tooldiv.transition()
-                .duration(500)
-                .style("opacity", 0);
-        })
-        .on("dblclick", connectedNodes);
+        .on("mouseout", hideTooltip)
+        .on("click", connectedNodes);
 
     function tooltipNode() {
-        var d = d3.select(this).node().__data__;
         // show tooltip!
+        var d = d3.select(this).node().__data__;
         tooldiv.transition()
             .duration(200)
             .style("opacity", '.8');
@@ -246,25 +275,47 @@ function updateNodes(svg, data) {
             .style("top", (d3.event.y - 30) + "px");
     };
 
+    function hideTooltip() {
+        // hide tooltip
+        tooldiv.transition()
+            .duration(500)
+            .style("opacity", 0);
+    };
+
     // Remember whether the highlighting is on
     var highlight = 0;
     function connectedNodes() {
         // show links of one individual node
         if (highlight == 0) {
-            //Reduce the opacity of all but the neighbouring nodes
+            // select node and show detailed information
             var d = d3.select(this).node().__data__;
-            tooltipNode;
+            // showDetails(d);
+
+            // reduce the opacity of all but the neighbouring nodes
             node.style("opacity", function (o) {
                 return d == o ? 1 : 0.1;
             });
+            objects = [];
             link.style("opacity", function (o) {
-                return d == o.source | d == o.target ? 1 : 0.1;
+                if(d == o.source || d == o.target) {
+                    // d3.select("[id='" + o.source.id + "']")
+                    //     .style("opacity", 1);
+                    // d3.select("[id='" + o.target.id + "']")
+                    //     .style("opacity", 1);
+                    objects.push(o.source)
+                    objects.push(o.target);
+                };
+                return d == o.source || d == o.target ? 1 : 0.1;
+            });
+            objects.forEach(function(o) {
+                d3.select("[id='" + o.id + "']")
+                    .style("opacity", 1);
             });
 
-            //Reduce the op
+            // reset highlight to reset opacity
             highlight = 1;
         } else {
-            //Put them back to opacity=1
+            // Put them back to opacity = 1
             node.style("opacity", 1);
             link.style("opacity", 1);
             highlight = 0;
@@ -272,6 +323,10 @@ function updateNodes(svg, data) {
     };
     node.exit().remove();
 };
+
+// function showDetails(node) {
+//
+// };
 
 function makeRadial(center, radius, increment, keys) {
     console.log("Radial:", increment)
