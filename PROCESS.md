@@ -54,3 +54,7 @@ Restructured the interaction.js file to cope with filtering nodes and links. Add
 
 # Day 10
 Fine-tuned the interactive highlight to also show the linked nodes, but spend most of my time figuring out how to create a working filtering system that updates the nodes and links in the graph according to selected checkboxes. Did not succeed yet. I did decide that I also want a legend and a small window with some details on the selected species; perhaps via eol.org as the dataset I'm using already works with their id codes.
+
+# Day 11
+Finally managed to create a clustered network grouping the plants with the plants, the mammals with the mammals etc. Also fixed an issue in the dataset (the word 'vector' was wrongly interpreted..) and made a start with a detail window.
+![](doc/Groups.png)

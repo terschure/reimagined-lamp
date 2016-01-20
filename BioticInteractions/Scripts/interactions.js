@@ -72,14 +72,11 @@ var setNetwork = function() {
     currentLinks = filterLinkData(data.links);
     updateLinks(svg);
     updateNodes(svg);
-    // layout can be "force" or "radial"
-    setLayout("force", width, height);
+    // layout can be "force", "cluster" or "radial"
+    setLayout("cluster", width, height);
 };
 
 var setLayout = function(layout, width, height) {
-    // set properties; layout can be "force" or "radial"
-    var layout = "force";
-
     // set force layout for physics simulation
     force.nodes(currentNodes)
         .links(currentLinks)
@@ -118,6 +115,36 @@ var setLayout = function(layout, width, height) {
 		        d.x += (centerNode.x - d.x) * k;
 		        return d.y += (centerNode.y - d.y) * k;
 	        };
+        };
+    }
+    else if(layout == "cluster") {
+        force.on("tick", tick)
+            .linkStrength(0.001)
+            .charge(-1.5)
+            .start();
+
+        function tick(e) {
+            // Push different nodes in different directions for clustering
+            // Source: http://bl.ocks.org/mbostock/1021841
+            var k = 6 * e.alpha;
+            // console.log(e.alpha);
+            currentNodes.forEach(function(o, i) {
+                if(o.group == "Plants") { return o.y += k, o.x += -k; }
+                else if(o.group == "Fungi") { return o.y += k, o.x += k; }
+                else if(o.group == "Mammals") { return o.y += -k/2, o.x += k*2; }
+                else if(o.group == "Insects") { return o.y += -k, o.x += k; }
+                else if(o.group == "Birds") { return o.y += -k, o.x += -k; }
+                else if(o.group == "Viruses") { return o.y += k/2, o.x += -k*2; }
+                else { return o.y += -k/2, o.x += k/2; };
+            });
+
+            node.attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
+
+            link.attr("x1", function(d) { return d.source.x; })
+                .attr("y1", function(d) { return d.source.y; })
+                .attr("x2", function(d) { return d.target.x; })
+                .attr("y2", function(d) { return d.target.y; });
         };
     }
     else {
@@ -216,7 +243,7 @@ function updateLinks(svg) {
             else if (d.interaction == 'vector') { return "#377eb8" }
         })
         .style("stroke-width", 2)
-        .style("stroke-opacity", ".5")
+        .style("stroke-opacity", ".1")
         .on("mouseover", function(d) {
             // show tooltip!
             tooldiv.transition()
@@ -249,12 +276,12 @@ function updateNodes(svg) {
         .attr("id", function(d) { return d.id })
         .attr("r", 3)
         .style("fill", function(d) {
-            if (d.group == 'Insecta') { return "steelblue" }
+            if (d.group == 'Insects') { return "orange" }
             else if (d.group == 'Mammals') { return "red" }
             else if (d.group == 'Plants') { return "green" }
             else if (d.group == 'Fungi') { return "white" }
             else if (d.group == 'Viruses') { return "purple" }
-            else if (d.group == 'Birds') { return "orange" }
+            else if (d.group == 'Birds') { return "#5712A4" }
             else { return "grey" }
         })
         .style("stroke", 1 )
@@ -289,44 +316,53 @@ function updateNodes(svg) {
         if (highlight == 0) {
             // select node and show detailed information
             var d = d3.select(this).node().__data__;
-            // showDetails(d);
+            showDetails(d);
 
             // reduce the opacity of all but the neighbouring nodes
             node.style("opacity", function (o) {
                 return d == o ? 1 : 0.1;
             });
             objects = [];
+
             link.style("opacity", function (o) {
-                if(d == o.source || d == o.target) {
-                    // d3.select("[id='" + o.source.id + "']")
-                    //     .style("opacity", 1);
-                    // d3.select("[id='" + o.target.id + "']")
-                    //     .style("opacity", 1);
-                    objects.push(o.source)
+                if(d === o.source) {
                     objects.push(o.target);
+                    d3.select("#details").append("p")
+                        .text(".. is a " + o.interaction + " of " + o.target.speciesName);
+                }
+                else if(d === o.target) {
+                    objects.push(o.source);
+                    d3.select("#details").append("p")
+                        .text(o.source.speciesName + " is a " + o.interaction + " of this species");
                 };
-                return d == o.source || d == o.target ? 1 : 0.1;
+                return d == o.source || d == o.target ? 0.8 : 0.1;
             });
             objects.forEach(function(o) {
                 d3.select("[id='" + o.id + "']")
                     .style("opacity", 1);
             });
-
             // reset highlight to reset opacity
             highlight = 1;
-        } else {
+        }
+        else {
             // Put them back to opacity = 1
             node.style("opacity", 1);
             link.style("opacity", 1);
             highlight = 0;
-        }
+            // remove previous details
+            d3.select("#details").remove();
+        };
     };
     node.exit().remove();
 };
 
-// function showDetails(node) {
-//
-// };
+function showDetails(d) {
+    var div = d3.select("body").append("div")
+        .attr("id", "details");
+    div.append("h4").text(d.speciesName);
+    div.append("p").text(d.path)
+        .style("font-size", "7px");
+};
 
 function makeRadial(center, radius, increment, keys) {
     console.log("Radial:", increment)

@@ -79,18 +79,24 @@ for each in reader:
 
         # add interaction to corresponding lists
         data = {}
-        data['source'] = each['sourceID']
-        data['target'] = each['targetID']
-        if each['interactionType'] == "parasiteOf":
-            data['interaction'] = 'parasite'
-        elif each['interactionType'] == "pathogenOf":
-            data['interaction'] = 'pathogen'
-        elif each['interactionType'] == "pollinates":
-            data['interaction'] = 'pollinator'
-        elif each['interactionType'] == "preysOn":
-            data['interaction'] = 'predator'
-        elif each['interactionType'] == "vectorOf":
+
+        # for some reason the dataset uses the word 'vector' wrongly
+        if each['interactionType'] == "vectorOf":
             data['interaction'] = 'vector'
+            data['source'] = each['targetID']
+            data['target'] = each['sourceID']
+        else:
+            data['source'] = each['sourceID']
+            data['target'] = each['targetID']
+            if each['interactionType'] == "parasiteOf":
+                data['interaction'] = 'parasite'
+            elif each['interactionType'] == "pathogenOf":
+                data['interaction'] = 'pathogen'
+            elif each['interactionType'] == "pollinates":
+                data['interaction'] = 'pollinator'
+            elif each['interactionType'] == "preysOn":
+                data['interaction'] = 'predator'
+
         if data not in links:
             links.append(data)
 
