@@ -58,3 +58,6 @@ Fine-tuned the interactive highlight to also show the linked nodes, but spend mo
 # Day 11
 Finally managed to create a clustered network grouping the plants with the plants, the mammals with the mammals etc. Also fixed an issue in the dataset (the word 'vector' was wrongly interpreted..) and made a start with a detail window.
 ![](doc/Groups.png)
+
+# Day 12
+Finally fixed the filters! Checking / unchecking the checkboxes now actually adds or removes a specific group of species. I also created a button to switch between the layouts and made a start with a search box.

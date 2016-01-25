@@ -7,16 +7,28 @@
 // data obtained from: http://api.globalbioticinteractions.org/interaction?bbox=3.36,50.75,7.23,53.59
 // http://api.globalbioticinteractions.org/interaction?type=json.v2
 //--------------------------------
+
+// globals
+nodeOpacity = 0.8;
+linkOpacity = 0.2;
+linkDistance = 100;
+layout = "force"
+
 d3.json("/Data/bioInteractions.json", function(error, json) {
     if (error) return console.warn(error);
+
+    // set global variables
     data = json;
     force = d3.layout.force();
+
+    // create the network and show the header and filters when it is loaded
     setNetwork();
+    createFilters(["Insects", "Mammals", "Birds", "Plants", "Fungi", "Viruses", "Other"], data);
+    createButtons();
+    createSearchBox();
     d3.select("#header").style("visibility", "visible");
     d3.select(".filters").style("visibility", "visible");
-
-    var speciesGroups = ["Insects", "Mammals", "Birds", "Plants", "Fungi", "Viruses", "Other"];
-    createFilters(speciesGroups, data);
+    d3.select(".buttons").style("visibility", "visible");
 });
 
 window.onload = function () {
@@ -33,47 +45,153 @@ window.onload = function () {
         .style("opacity", 0);
 
     filterdiv = d3.select("body").append("div");
-    filterdiv.text("FILTERS: ")
+    filterdiv.attr("id", "filters")
         .attr("class", "filters");
 };
 
 var createFilters = function(speciesGroups, allData) {
-    d3.select(".filters").selectAll("input")
+    d3.select("#filters").selectAll("input")
         .data(speciesGroups)
         .enter()
         .append("label")
             .attr("for", function(d) { return d; })
-            .text(function(d) { return d; })
+            .text(function(d) { return " " + d; })
             .style("color", "white")
         .append("input")
             .attr("checked", true)
             .attr("type", "checkbox")
             .attr("id", function(d) { return d; })
-            .on("click", function (d) { return updateNetwork(); });
+            .on("click", filterNodesData);
+};
+
+var createButtons = function() {
+    // d3.select("body").append("div")
+        // .attr("id", "layout")
+        filterdiv.append("input")
+            .attr("class", "buttons")
+            .attr("name", "cluster")
+            .attr("type", "button")
+            .attr("value", "Change Layout")
+            // .style("bottom", "3%")
+            // .style("margin-left", "3%")
+            .on("mouseover", function() {
+                d3.select(this).style("background-color", "lightsteelblue")
+            })
+            .on("mouseout", function() {
+                d3.select(this).style("background-color", "black")
+            })
+            .on("click", function() {
+                if(layout == "force") {
+                    layout = "cluster"
+                    setLayout("cluster", width, height);
+                }
+                else if(layout == "cluster") {
+                    layout = "force"
+                    setLayout("force", width, height);
+                };
+            });
+    // // d3.select("body").append("div")
+    // //     .attr("id", "force")
+    //     filterdiv.append("input")
+    //         .attr("class", "buttons")
+    //         .attr("name", "cluster")
+    //         .attr("type", "button")
+    //         .attr("value", "Force")
+    //         // .style("bottom", "3%")
+    //         // .style("margin-left", "10%")
+    //         .on("mouseover", function() {
+    //             d3.select(this).style("background-color", "lightsteelblue")
+    //         })
+    //         .on("mouseout", function() {
+    //             d3.select(this).style("background-color", "black")
+    //         })
+    //         .on("click", function() {
+    //             if(layout == "cluster") {
+    //                 layout = "force"
+    //                 setLayout("force", width, height);
+    //             };
+    //         });
+};
+// <div class="ui-widget">
+//    <input id="search">
+//     <button type="button" onclick="searchNode()">Search</button>
+// </div>
+var createSearchBox = function() {
+
+    filterdiv.append("form").append("input")
+        .attr("id", "search")
+        .attr("type", "text")
+        .attr("placeholder", "Search network..")
+    filterdiv.append("button")
+            .attr("class", "button")
+            .attr("type", "button")
+            .attr("value", "Search")
+            .on("click", searchNode());
+
+    var optArray = [];
+    for (var i = 0; i < data.nodes.length - 1; i++) {
+        optArray.push(data.nodes[i].speciesName);
+    }
+    optArray = optArray.sort();
+    $(function () {
+        $("#search").autocomplete({
+            source: optArray
+        });
+    });
+    function searchNode() {
+        //find the node
+        var selectedVal = document.getElementById('search').value;
+        var node = d3.selectAll(".node");
+        if (selectedVal == "none") {
+            node.style("stroke", "white").style("stroke-width", "1");
+        } else {
+            var selected = node.filter(function (d, i) {
+                return d.speciesName != selectedVal;
+            });
+            selected.style("opacity", "0");
+            var link = d3.selectAll(".link")
+            link.style("opacity", "0");
+            d3.selectAll(".node, .link").transition()
+                .duration(5000)
+                .style("opacity", 1);
+        }
+    };
 };
 
 var setNetwork = function() {
     width = window.innerWidth;
     height = window.innerHeight;
 
+    // set zoom and panning behavior; source: http://bl.ocks.org/mbostock/6123708
+    var zoom = d3.behavior.zoom()
+        .scaleExtent([1, 10])
+        .on("zoom", zoomed);
+
+    function zoomed() {
+        console.log("zoom")
+        d3.select("#nodes").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        d3.select("#links").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    };
+
     // create new div element containing svg element for the network
     d3.select("body").append("div")
         .attr("id", "interactions")
-            .attr("width", width)
-            .attr("height", height);
+        .attr("width", width)
+        .attr("height", height);
 
     svg = d3.select("#interactions").append("svg")
         .attr("class", "network")
-            .attr("width", width)
-            .attr("height", height);
+        .attr("width", width)
+        .attr("height", height)
+        .call(zoom);
 
     // show all species and inderactions
     currentNodes = data.nodes;
-    currentLinks = filterLinkData(data.links);
+    currentLinks = filterLinkData(data, currentNodes);
     updateLinks(svg);
     updateNodes(svg);
     // layout can be "force", "cluster" or "radial"
-    setLayout("cluster", width, height);
+    setLayout(layout, width, height);
 };
 
 var setLayout = function(layout, width, height) {
@@ -82,42 +200,7 @@ var setLayout = function(layout, width, height) {
         .links(currentLinks)
         .size([width, height]);
 
-    if(layout == "radial") {
-        var groups = sortedGroups(currentNodes, currentLinks);
-        var center = { "x":width/2, "y":height/2 };
-        var radius = 300;
-        var increment = 18;
-        makeRadial(center, radius, increment, groups);
-        force.on("tick", radialTick)
-            // .charge(function(node) { return -Math.pow(node.radius, 2.0) / 2 })
-            .start();
-
-        var radialTick = function(e) {
-            node.each(moveToRadialLayout(e.alpha));
-            node.attr("cx", function(d) { return d.x;})
-                .attr("cy", function(d) { return d.y;});
-            link.attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; });
-            if(e.alpha < 0.03) {
-                force.stop();
-                return updateLinks();
-            }
-
-        };
-        var moveToRadialLayout = function(alpha) {
-            var k;
-	        k = alpha * 0.1;
-	        return function(d) {
-                var centerNode;
-		        centerNode = groupCenters(groupBy(d));
-		        d.x += (centerNode.x - d.x) * k;
-		        return d.y += (centerNode.y - d.y) * k;
-	        };
-        };
-    }
-    else if(layout == "cluster") {
+    if(layout == "cluster") {
         force.on("tick", tick)
             .linkStrength(0.001)
             .charge(-1.5)
@@ -138,7 +221,9 @@ var setLayout = function(layout, width, height) {
                 else { return o.y += -k/2, o.x += k/2; };
             });
 
-            node.attr("cx", function(d) { return d.x; })
+            node.transition()
+                .duration(300)
+                .attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
 
             link.attr("x1", function(d) { return d.source.x; })
@@ -149,7 +234,9 @@ var setLayout = function(layout, width, height) {
     }
     else {
         force.distance(40)
-            .charge(-10)
+            .linkStrength(0.2)
+            .distance(linkDistance)
+            .charge(-8)
             .start();
 
         force.on("tick", function() {
@@ -158,47 +245,51 @@ var setLayout = function(layout, width, height) {
                 .attr("x2", function(d) { return d.target.x; })
                 .attr("y2", function(d) { return d.target.y; });
 
-            node.attr("cx", function(d) { return d.x; })
+            node.transition()
+                .duration(400)
+                .attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
         });
     };
 };
 
 var updateNetwork = function() {
-    currentNodes = filterNodeData();
-    currentLinks = filterLinkData();
+    currentLinks = filterLinkData(data, currentNodes);
     updateLinks(svg);
     updateNodes(svg);
-    // layout can be "force" or "radial"
-    setLayout("force", width, height);
+    // layout can be "force", "cluster" or "radial"
+    setLayout(layout, width, height);
 };
 
-function filterNodeData() {
-    filteredNodes = [];
+// IDEA: exactly two filters are selected;
+// position the groups opposite of each other
+var filterNodesData = function() {
+    var temp = currentNodes;
+    var id = this.id;
+    console.log(id);
+    // temp = temp.filter( function(entry) { return entry.group == id });
 
-    d3.selectAll("input").on("change", function() {
-        console.log("checked:", this.checked)
-        var id = this.id
-        console.log(id)
-
-        if(this.checked) {
-            var selection = [];
-            currentNodes.filter( function(entry) {
-                selection = entry.group === id;
-            });
-            return currentNodes.concat(selection);
-        }
-        else {
-            currentNodes.filter( function(entry) {
-                return entry.group !== id;
-            });
-        };
-    });
-    console.log("Filtered: ", filteredNodes);
-    return filteredNodes;
+    if(this.checked) {
+        var selection = data.nodes.filter( function(entry) {
+            return entry.group == id;
+        });
+        temp = temp.concat(selection);
+    }
+    else {
+        temp = temp.filter( function(entry) {
+            return entry.group != id;
+        });
+    };
+    currentNodes = temp;
+    // console.log(temp);
+    currentLinks = filterLinkData(data, currentNodes)
+    updateLinks(svg);
+    updateNodes(svg);
+    setLayout(layout, width, height);
 };
 
-function filterLinkData() {
+
+function filterLinkData(data, currentNodes) {
     // prepare data for links in the network
     var edges = [];
     data.links.forEach(function(e) {
@@ -222,7 +313,7 @@ function filterLinkData() {
 
 function updateLinks(svg) {
     // remove existing links
-    d3.select("#links").remove();
+    d3.select("#links").transition().remove();
 
     // create the links
     var linksG = svg.append("g")
@@ -243,12 +334,12 @@ function updateLinks(svg) {
             else if (d.interaction == 'vector') { return "#377eb8" }
         })
         .style("stroke-width", 2)
-        .style("stroke-opacity", ".1")
+        .style("stroke-opacity", linkOpacity)
         .on("mouseover", function(d) {
             // show tooltip!
             tooldiv.transition()
                 .duration(200)
-                .style("opacity", '.8');
+                .style("opacity", ".8");
             tooldiv.html(d.source.speciesName + ' is a ' + d.interaction + ' of ' + d.target.speciesName)
                 .style("left", (d3.event.x) + "px")
                 .style("top", (d3.event.y - 30) + "px");
@@ -284,6 +375,7 @@ function updateNodes(svg) {
             else if (d.group == 'Birds') { return "#5712A4" }
             else { return "grey" }
         })
+        .style("opacity", nodeOpacity)
         .style("stroke", 1 )
         .style("stroke-width", 1.0)
         .call(force.drag)
@@ -318,13 +410,17 @@ function updateNodes(svg) {
             var d = d3.select(this).node().__data__;
             showDetails(d);
 
-            // reduce the opacity of all but the neighbouring nodes
+            // reduce the opacity of all but this node
             node.style("opacity", function (o) {
-                return d == o ? 1 : 0.1;
+                return d == o ? 1 : 0.2;
             });
+
+            // store the neighbouring nodes in an array
             objects = [];
 
-            link.style("opacity", function (o) {
+            // reduce the opacity of all but these links
+            // and show details about the relationship
+            link.style("stroke-opacity", function (o) {
                 if(d === o.source) {
                     objects.push(o.target);
                     d3.select("#details").append("p")
@@ -337,6 +433,8 @@ function updateNodes(svg) {
                 };
                 return d == o.source || d == o.target ? 0.8 : 0.1;
             });
+
+            // reduce the opacity of all neigbouring nodes
             objects.forEach(function(o) {
                 d3.select("[id='" + o.id + "']")
                     .style("opacity", 1);
@@ -345,9 +443,9 @@ function updateNodes(svg) {
             highlight = 1;
         }
         else {
-            // Put them back to opacity = 1
-            node.style("opacity", 1);
-            link.style("opacity", 1);
+            // Put them back to original opacity
+            node.style("opacity", nodeOpacity);
+            link.style("stroke-opacity", linkOpacity);
             highlight = 0;
             // remove previous details
             d3.select("#details").remove();
@@ -362,75 +460,4 @@ function showDetails(d) {
     div.append("h4").text(d.speciesName);
     div.append("p").text(d.path)
         .style("font-size", "7px");
-};
-
-function makeRadial(center, radius, increment, keys) {
-    console.log("Radial:", increment)
-    // store key-location values and set layout
-    var values = d3.map();
-    var startAngle = -120;
-    var currentAngle = startAngle;
-    setKeys();
-
-    // create layout depending on keys
-    function setKeys() {
-        console.log("Setting the keys...", keys)
-        values = d3.map();
-        var numberInner = 360 / increment
-        if(keys.length < numberInner) {
-            increment = 360 / keys.length;
-            console.log(increment);
-        };
-        var innerKeys = keys.slice(0, numberInner);
-        innerKeys.forEach(function(k) { return place(k); });
-
-        // setup outer circle
-        var outerKeys = keys.slice(numberInner);
-        radius = radius + radius / 1.8;
-        increment = 360 / outerKeys.length
-        outerKeys.forEach(function(k) { return place(k); });
-    }
-
-    // Get new location for key
-    function place(key) {
-        console.log("Setting the place...")
-        var value = radialLocation(center, currentAngle, radius);
-        values.set(key,value);
-        currentAngle += increment;
-        return value;
-    }
-
-    // Get a radial position given a certain angle
-    function radialLocation(center, angle, radius) {
-        console.log("Getting radial position...")
-        var x = (center.x + radius * Math.cos(angle * Math.PI / 180));
-        var y = (center.y + radius * Math.sin(angle * Math.PI / 180));
-        return { "x":x, "y":y };
-    }
-}
-
-function sortedGroups(nodes, links) {
-    // return an array of group values
-    var groups = [];
-    var counts = {};
-    links.forEach(function(l) {
-        var _name, _name1;
-    	if (counts[_name = l.source.group] == null) {
-    		counts[_name] = 0;
-    	}
-        else {counts[l.source.group] += 1;};
-    	if (counts[_name1 = l.target.group] == null) {
-    		counts[_name1] = 0;
-    	}
-    	else {counts[l.target.group] += 1;};
-    });
-    nodes.forEach(function(n) {
-        var _name;
-	    return counts[_name = n.group] != null ? counts[_name] : counts[_name] = 0;
-    });
-    groups = d3.entries(counts).sort( function (a,b) {
-        return b.value - a.value
-    });
-    groups = groups.map(function(v) { return v.key; });
-    return groups;
 };
