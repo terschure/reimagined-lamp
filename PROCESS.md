@@ -60,4 +60,8 @@ Finally managed to create a clustered network grouping the plants with the plant
 ![](doc/Groups.png)
 
 # Day 12
-Finally fixed the filters! Checking / unchecking the checkboxes now actually adds or removes a specific group of species. I also created a button to switch between the layouts and made a start with a search box.
+Finally fixed the filters! Checking / unchecking the checkboxes now actually adds or removes a specific group of species. I also created a button to switch between the layouts and made a start with a search box. Panning and zoom was also implemented.
+
+# Day 13
+Managed to make a fully functional search-box with autocomplete using jQuery. Searching for a species highlights the corresponding nodes and neighbours just like clicking on a node does. Added the number of species and interactions shown and a legend, doubling as filter and as labels and centralised the colourscheme by using the d3 colour function for ordinal scales. As you can see below, these still need some adjusting for proper readability.
+![](doc/SearchLegendsAndNumbers.png)

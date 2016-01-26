@@ -6,10 +6,15 @@
 
 #wrapper {
     align-self: center;
+    align-items: center;
     position:absolute;
     top: 0px;
     left: 0px;
     background: black;
+    background-color: black;
+    color: white;
+    font-family: 'Avant Garde', Avantgarde, 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
+    font-size: 12px;
 }
 
 #header {
@@ -27,28 +32,73 @@
     visibility: hidden;
 }
 
-.filters {
+.ui-autocomplete-input, .ui-autocomplete, .ui-menu-item {
     background-color: black;
-    opacity: 0.7;
-    color: white;
+    border: 0;
     font-family: 'Avant Garde', Avantgarde, 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
-    bottom: 10%;
-    margin-left: 30%;
-    font-size: 10px;
-    /*min-width: 25%;*/
+    color: white;
+    opacity: 0.8;
+}
+
+.legend {
+    background-color: black;
+    text-align: center;
+    font-family: 'Avant Garde', Avantgarde, 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
+    opacity: 0.7;
+    right: 25%;
+    left: 25%;
     position: absolute;
     visibility: hidden;
 }
 
 .buttons {
     background-color: black;
-    color: white;
     font-family: 'Avant Garde', Avantgarde, 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
     border: none;
-    font-size: 10px;
+    color: white;
     min-width: 5%;
     opacity: 0.8;
-    visibility: hidden;
+    border-bottom: 1.5px solid gray;
+    border-right: 1.5px solid gray;
+    cursor: pointer;
+}
+
+.buttons:hover {
+    background-color: gray;
+}
+
+.tooltip {
+    position: absolute;
+    background: lightgray;
+    border: 0px;
+    font-weight: bolder;
+    border-radius: 8px;
+    padding: 4px;
+    opacity: 0;
+    color: black;
+}
+
+#legend {
+    bottom: 40px;
+}
+
+#filters {
+    bottom: 55px;
+}
+
+#search-box {
+    position: absolute;
+    top: 4%;
+    right: 80px;
+}
+
+#numbers {
+    position: absolute;
+    top: 60px;
+    margin-left: 3%;
+    color: gray;
+    background-color: black;
+    opacity: 0.7
 }
 
 #details {
