@@ -65,3 +65,7 @@ Finally fixed the filters! Checking / unchecking the checkboxes now actually add
 # Day 13
 Managed to make a fully functional search-box with autocomplete using jQuery. Searching for a species highlights the corresponding nodes and neighbours just like clicking on a node does. Added the number of species and interactions shown and a legend, doubling as filter and as labels and centralised the colourscheme by using the d3 colour function for ordinal scales. As you can see below, these still need some adjusting for proper readability.
 ![](doc/SearchLegendsAndNumbers.png)
+
+# Day 14
+Adjusted many minor things like colour and highlights and added some nice functionalities, e.g. highlighting the interactions when hovering over the legend entry:
+![](doc/HighlightInteractions.png)
