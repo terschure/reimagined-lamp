@@ -1,11 +1,8 @@
 //--------------------------------
 // by: Anneke ter Schure, 6084087
 //
-// make localhost server: python -m SimpleHTTPServer
-// use url: http://localhost:8000/index.html
-//
-// data obtained from: http://api.globalbioticinteractions.org/interaction?bbox=3.36,50.75,7.23,53.59
-// http://api.globalbioticinteractions.org/interaction?type=json.v2
+// data obtained from:  http://api.globalbioticinteractions.org/interaction?bbox=3.36,50.75,7.23,53.59
+//                      http://api.globalbioticinteractions.org/interaction?type=json.v2
 //--------------------------------
 
 // globals
@@ -171,6 +168,7 @@ var setLayout = function(layout, width, height) {
 
 
 var filterNodesData = function() {
+    removeDetails();
     var temp = currentNodes;
     var id = this.id;
 
@@ -192,7 +190,8 @@ var filterNodesData = function() {
 };
 
 function filterLinkData(data, currentNodes) {
-    // prepare data for links in the network
+    // prepare data for links in the network;
+    // source: http://stackoverflow.com/questions/23986466/d3-force-layout-linking-nodes-by-name-instead-of-index
     var edges = [];
     data.links.forEach(function(e) {
         var sourceNode = currentNodes.filter(function(n) {
@@ -366,25 +365,39 @@ function connectedNodes(id) {
             d3.select("[id='" + o.id + "']")
                 .style("opacity", 1);
         });
+        // do not show numbers
+        d3.select("#numbers").style("opacity", 0);
+
         // reset highlight to reset opacity
         highlight = 1;
     }
-    else {
-        // Put them back to original opacity
-        node.style("opacity", nodeOpacity);
-        link.style("stroke-opacity", linkOpacity);
-        highlight = 0;
-        // remove previous details
-        d3.select("#details").remove();
-    };
+    else { removeDetails };
+};
+
+function removeDetails() {
+    // Put them back to original opacity
+    node.style("opacity", nodeOpacity);
+    link.style("stroke-opacity", linkOpacity);
+    highlight = 0;
+    // show numbers again
+    d3.select("#numbers").style("opacity", 0.7);
+    // remove previous details
+    d3.select("#details").remove();
 };
 
 function showDetails(d) {
     var div = d3.select("body").append("div")
         .attr("id", "details");
-    div.append("h3").text(d.speciesName);
+    div.append("text")
+        .style("font-size", "32px")
+        .style("color", colorNodes(d.group))
+        .text(d.speciesName)
+    div.append("p")
+        .style("font-size", "14px")
+        .style("color", colorNodes(d.group))
+        .text("(" + d.group + ")");
     div.append("p").text(d.path)
-        .style("font-size", "7px");
+        .style("font-size", "10px");
 };
 
 
@@ -413,7 +426,6 @@ var createFilters = function(speciesGroups, allData) {
 
 var showNumbers = function() {
     d3.select("#numbers").remove();
-
     d3.select("body").append("div")
         .attr("id", "numbers")
         .append("p")
@@ -422,6 +434,7 @@ var showNumbers = function() {
             .text(currentLinks.length + " interactions");
 };
 
+linklight = 0; // remember whether links are highlighted
 var createLegend = function () {
     var legend = d3.select("#filters").append("p")
         .append("text")
@@ -438,14 +451,20 @@ var createLegend = function () {
             .style("cursor", "pointer")
             .text(function(d) { return d + ";"; })
             .on("mouseover", function (entry) {
-                linklight = 1;
-                link.style("stroke-opacity", function(o) {
-                    return entry == o.interaction ? 0.8 : 0.05;
-                })
+                // highlight corresponding links of interaction-type
+                if(highlight == 0) {
+                    linklight = 1;
+                    link.style("stroke-opacity", function(o) {
+                        return entry == o.interaction ? 0.8 : 0.05;
+                    })
+                };
             })
             .on("click", function() {
-                linklight = 0;
-                link.style("stroke-opacity", linkOpacity)
+                // remove the highlight
+                if(highlight == 0) {
+                    linklight = 0;
+                    link.style("stroke-opacity", linkOpacity)
+                }
             });
 }
 
@@ -510,11 +529,14 @@ var createSearchBox = function() {
 var createExplanation = function() {
     d3.select("body").append("div")
         .attr("id", "text")
-        .text("Something something darkside");
+        .append("p").html("<br>HOW TO:<br><br>Click on a node to get details<br>Click on the 'Cluster' button to regroup the data<br>Select the checkboxes to show certain data<br>Hover over the 'Interaction types' legend to highlight them<br>...and click on it to see all of them again.<br><br>Have fun exploring!<br><br><br><br>")
+        .append("p").html("SOME BACKGROUND TO THIS BIOTIC INTERACTIONS VISUALISATION<br><br>Animals, plants, fungi and bacteria all over the world interact in different ways and over micro-scale to global distances. Many species specific research papers on these interactions have been published, but in order to get an overview of what data is already available and how a system of interactions or an ecosystem functions, it is important to combine these results into one visualisation. Note that the data used for the visalisation certainly does not contain all interactions and species currently known. This is however published data from scientific research.")
+        .append("p").html("I made this visualisation of the GloBi dataset as a final project for the Minor Programming at the University of Amsterdam, thus combining my background in Biology (I'll be a MSc in this subject in a couple of days!) with my new skills in programming.")
+        .append("p").html("The data used for this visualisation is not mine, but is from the GloBi project: Poelen, J. H., Simons, J. D., & Mungall, C. J. (2014). Global Biotic Interactions: An open infrastructure to share and analyze species-interaction datasets. Ecological Informatics. <a href=http://www.sciencedirect.com/science/article/pii/S1574954114001125 target=_blank>doi:10.1016/j.ecoinf.2014.08.005</a><br><br><br>");
 };
 
 var createFooter = function() {
     d3.select("body").append("div")
         .attr("id", "footer")
-        .html("This project is created with data from the <a href=http://www.globalbioticinteractions.org/ target=_blank>Global Biotic Interactions project</a> by Encyclopedia of Life (EOL)");
+        .html("This project is created with data from the <a href=http://www.globalbioticinteractions.org/ target=_blank>Global Biotic Interactions project</a> by Encyclopedia of Life (EOL) <br> and with the use of the <a href=https://github.com/mbostock/d3/ target=_blank>D3</a> JavaScript library. <br><br> Copyright (c) 2016 Anneke ter Schure");
 };
