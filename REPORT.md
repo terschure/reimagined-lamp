@@ -30,17 +30,22 @@ For information about making network visualisations in d3 the following sources 
 
 #### Design process
 The aim of the visualisation is to show how complex a network of species interactions is and thereby how complex an ecosystem is. A secondary aim is to provide a tool to explore these interactions and facilitate pattern finding. These aims have not really changed compared to the beginning of this project. However, some design choices to achieve these aims have.
-One major issue was that the dataset is quite big, too big in fact to create a network that allows for a clear overview of the data. On the one hand this was good as it is concurrent with my first aim. On the other hand, in order for the second aim to also be achieved I had some work to do. There were several designs that I liked (e.g. a [bundle](http://mbostock.github.io/d3/talk/20111116/bundle.html) or [chord diagram](http://sdk.gooddata.com/gooddata-js/example/chord-chart-to-analyze-sales/)), but I decided to first focus on a less structured network map. As can be read in the [design document](DESIGN.md) that I've written in the first week, I decided that the user must at least be able to select and filter the data and that the species names should appear on hovering over the nodes. However, just making a network map proved to be more troublesome than I anticipated due to some minor problems in the dataset only found by checking each object in the datafile e.g. interactions that missed a source or a target.
-After the network map worked as planned, I started adding things like colours and legends, but still with the idea of a cluster layout in my head. So I started working on that, but somewhere along the way I realised that there were over 2000 species in the dataset so in order to create a radial layout I would have to create several circles. If you include the links this would still be chaotic. Therefor I decided to stick with the force-layout as an initial state of the network and create a second layout that groups the species together based on their taxonomy thereby allowing for proper pattern finding.
-The rest of my time was spent on fixing bugs and adding more functions to achieve the second aim of providing a tool to explore the species interactions and facilitate pattern finding. These are: zooming, panning, showing details about a species' interactions, searching specific species (including an autocomplete function), highlighting all interactions of a certain type and a counter of the number of species and the number of interactions currently shown in the visualisation. Thereby eventually making a much more intricate visualisation than first meets the eye.
 
-First view of the Biotic Interactions network
+One major issue was that the dataset is quite big, too big in fact to create a network that allows for a clear overview of the data. On the one hand this was good as it is concurrent with my first aim. On the other hand, in order for the second aim to also be achieved I had some work to do. There were several designs that I liked (e.g. a [bundle](http://mbostock.github.io/d3/talk/20111116/bundle.html) or [chord diagram](http://sdk.gooddata.com/gooddata-js/example/chord-chart-to-analyze-sales/)), but I decided to first focus on a less structured network map.
+
+As can be read in the [design document](DESIGN.md) that I've written in the first week, I decided that the user must at least be able to select and filter the data and that the species names should appear on hovering over the nodes. However, just making a network map proved to be more troublesome than I anticipated due to some minor problems in the dataset only found by checking each object in the datafile e.g. interactions that missed a source or a target.
+
+After the network map worked as planned, I started adding things like colours and legends, but still with the idea of a cluster layout in my head. So I started working on that, but somewhere along the way I realised that there were over 2000 species in the dataset so in order to create a radial layout I would have to create several circles. If you include the links this would still be chaotic. Therefore I decided to stick with the force-layout as an initial state of the network and create a second layout that groups the species together based on their taxonomy thereby allowing for proper pattern finding.
+
+The rest of my time was spent on fixing bugs and adding more functions to better achieve the second aim of providing a tool to explore the species interactions and facilitate pattern finding. These are: zooming, panning, showing details about a species' interactions, searching specific species (including an autocomplete function), highlighting all interactions of a certain type and a counter of the number of species and the number of interactions currently shown in the visualisation. Thereby eventually making a much more intricate visualisation than first meets the eye.
+
+First view of the Biotic Interactions network:
 ![](doc/finalNetworkOverview.png)
 
-Selecting a node shows direct interactions
-![](doc/detailHighLightWindow.png)
+Selecting a node shows direct interactions:
+![](doc/detailHighlightWindow.png)
 
-Highlighting specific interaction types shows patters that otherwise seem absent
+Highlighting specific interaction types shows patters that otherwise seem absent:
 ![](doc/highlightLinkGroups.png)
 
 #### References
