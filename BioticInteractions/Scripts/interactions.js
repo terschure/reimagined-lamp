@@ -13,7 +13,7 @@ layout = "force";
 colorNodes = d3.scale.ordinal()
     .domain(["Insects", "Mammals", "Birds", "Plants", "Fungi", "Viruses", "Other"])
     .range(["#FFC000", "#FF0000", "#8D1BFF", "#007800", "#ECFFB1", "#B30065", "#838383"]);
-colorLinks = d3.scale.ordinal() // #ad0100
+colorLinks = d3.scale.ordinal()
     .domain(["predator", "parasite", "pollinator", "pathogen", "vector"])
     .range(["#8E0000", "#6E4A9C", "#BD40BD", "#004FFF", "#FF8000"]);
 
@@ -34,6 +34,8 @@ d3.json("/Data/bioInteractions.json", function(error, json) {
     createFooter();
     d3.select("#header").style("visibility", "visible");
     d3.select("#wrapper").style("visibility", "visible");
+
+    // ask the user for some patience
     var loading = svg.append("text")
         .attr("x", width / 2)
         .attr("y", height / 2)
@@ -41,6 +43,7 @@ d3.json("/Data/bioInteractions.json", function(error, json) {
         .style("text-anchor", "middle")
         .style("fill", "gray")
         .text("Simulating network. One moment please");
+
     // Use a timeout to allow the rest of the page to load first.
     setTimeout(function() {
 
@@ -50,6 +53,7 @@ d3.json("/Data/bioInteractions.json", function(error, json) {
         force.stop();
         loading.remove();
     }, 3000);
+
 });
 
 var setNetwork = function() {
@@ -88,7 +92,6 @@ var setNetwork = function() {
     updateLinks(svg);
     updateNodes(svg);
 
-    // setLayout(layout, width, height);
     // set force layout for physics simulation
     force.nodes(currentNodes)
         .links(currentLinks)
@@ -110,10 +113,6 @@ var setNetwork = function() {
 };
 
 var setLayout = function(layout, width, height) {
-    // force.nodes(currentNodes)
-    //     .links(currentLinks)
-    //     .size([width, height]);
-
     if(layout == "cluster") {
         force.on("tick", tick)
             .linkStrength(0.001)
@@ -200,6 +199,7 @@ function filterLinkData(data, currentNodes) {
         targetNode = currentNodes.filter(function(n) {
             return n.id === e.target;
         })[0];
+
         // only parse links that are valid after filtering the nodes
         if(sourceNode != undefined && targetNode != undefined) {
             edges.push({
@@ -249,6 +249,8 @@ function updateLinks(svg) {
             tooldiv.html(d.source.speciesName + ' is a ' + d.interaction + ' of ' + d.target.speciesName)
                 .style("left", (d3.event.x) + "px")
                 .style("top", (d3.event.y - 30) + "px");
+
+            // highlight individual link on hover
             if(highlight == 0 && linklight == 0) {
                 d3.select(this).style("stroke-opacity", ".95");
             };
@@ -258,6 +260,8 @@ function updateLinks(svg) {
             tooldiv.transition()
                 .duration(500)
                 .style("opacity", 0);
+
+            // remove highlight
             if(highlight == 0 && linklight == 0) {
                 d3.select(this).style("stroke-opacity", linkOpacity);
             };
@@ -266,6 +270,7 @@ function updateLinks(svg) {
         .delay(200)
         .style("stroke-opacity", linkOpacity);
     link.exit().remove();
+
 };
 
 function updateNodes(svg) {
@@ -299,12 +304,7 @@ function updateNodes(svg) {
     function dragstart(d) {
         d3.event.sourceEvent.stopPropagation();
         d.fixed = true;
-        // d3.select(this).classed("fixed", true);
     }
-
-    // function unstick(d) {
-    //     d3.select(this).classed("fixed", d.fixed = false);
-    // }
 
     function tooltipNode() {
         // show tooltip!
@@ -371,18 +371,20 @@ function connectedNodes(id) {
         // reset highlight to reset opacity
         highlight = 1;
     }
-    else { removeDetails };
+    else {
+        removeDetails();
+     };
 };
 
 function removeDetails() {
     // Put them back to original opacity
     node.style("opacity", nodeOpacity);
     link.style("stroke-opacity", linkOpacity);
-    highlight = 0;
     // show numbers again
     d3.select("#numbers").style("opacity", 0.7);
     // remove previous details
     d3.select("#details").remove();
+    highlight = 0;
 };
 
 function showDetails(d) {
