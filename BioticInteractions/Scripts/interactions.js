@@ -540,5 +540,5 @@ var createExplanation = function() {
 var createFooter = function() {
     d3.select("body").append("div")
         .attr("id", "footer")
-        .html("This project is created with data from the <a href='http://www.globalbioticinteractions.org/' target='_blank'>Global Biotic Interactions project</a> that was funded by Encyclopedia of Life (EOL) <br> and with the use of the <a href='https://github.com/mbostock/d3/' target='_blank'>D3</a> JavaScript library. <br><br> Copyright (c) 2016 Anneke ter Schure");
+        .html("This project is created with data from the <a href='http://www.globalbioticinteractions.org/' target='_blank'>Global Biotic Interactions project</a><br> and with the use of the <a href='https://github.com/mbostock/d3/' target='_blank'>D3</a> JavaScript library. <br><br> Copyright (c) 2016 Anneke ter Schure");
 };
