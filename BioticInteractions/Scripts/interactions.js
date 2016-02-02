@@ -17,7 +17,7 @@ colorLinks = d3.scale.ordinal()
     .domain(["predator", "parasite", "pollinator", "pathogen", "vector"])
     .range(["#8E0000", "#6E4A9C", "#BD40BD", "#004FFF", "#FF8000"]);
 
-d3.json("/Data/bioInteractions.json", function(error, json) {
+d3.json("Data/bioInteractions.json", function(error, json) {
     if (error) return console.warn(error);
 
     data = json;
