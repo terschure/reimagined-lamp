@@ -303,7 +303,6 @@ function updateNodes(svg) {
 
     function dragstart(d) {
         d3.event.sourceEvent.stopPropagation();
-        d.fixed = true;
     }
 
     function tooltipNode() {
@@ -331,7 +330,6 @@ highlight = 0; // Remember whether the highlighting and details are shown
 function connectedNodes(id) {
     // show all relations of one individual node
     if (highlight == 0) {
-
         // select node
         var d = d3.select("[id='" + id + "']").node().__data__;
         showDetails(d);
@@ -350,15 +348,42 @@ function connectedNodes(id) {
             if(d === o.source) {
                 objects.push(o.target);
                 d3.select("#details").append("p")
-                    .text(".. is a " + o.interaction + " of " + o.target.speciesName);
+                    .text(".. is a " + o.interaction + " of " + o.target.speciesName + "  ")
+                    .append("text");
+                // on click e.g. "ref" show the literature reference corresponding to the interaction
+                // getJSONtext();
+
             }
             else if(d === o.target) {
                 objects.push(o.source);
                 d3.select("#details").append("p")
                     .text(o.source.speciesName + " is a " + o.interaction + " of this species");
+
+                // on click e.g. "ref" show the literature reference corresponding to the interaction
+                // getJSONtext();
             };
             return d == o.source || d == o.target ? 0.95 : 0.1;
         });
+
+        function getJSONtext(sourceTaxon, targetTaxon) {
+            // TODO: change sourceTaxon and targetTaxon to string
+            var globiAPI = "http://api.globalbioticinteractions.org/interaction?sourceTaxon=" + sourceTaxon + "&targetTaxon=" + targetTaxon + "&field=study_citation&field=study_doi&includeObservations=true";
+            $.getJSON( globiAPI, {
+                format: "json"
+            })
+            .done(function( data ) {
+                var references = [];
+                $.each( data.data, function( i, item ) {
+                    console.log("Item:", item[0])
+                    if ($.inArray(item[0], references) == -1) {
+                        references.push(item[0]);
+                    }
+                });
+                references.forEach(function(d){
+                    d3.select("#details").append("p").text(d);
+                })
+            });
+        }
 
         // reduce the opacity of all neigbouring nodes
         objects.forEach(function(o) {
