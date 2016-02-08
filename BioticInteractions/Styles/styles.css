@@ -90,18 +90,28 @@
     top: 60px;
     margin-left: 3%;
     color: gray;
-    /*background-color: black;*/
     opacity: 0.7;
 }
 
 #details {
-    /*background-color: 0;*/
     opacity: 0.8;
     color: white;
     font-family: 'Avant Garde', Avantgarde, 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
     top: 70px;
     margin-left: 3%;
-    font-size: 9px;
+    font-size: 10px;
+    min-width: 20%;
+    max-width: 24%;
+    position: absolute;
+}
+
+#references {
+    opacity: 0.8;
+    color: white;
+    font-family: 'Avant Garde', Avantgarde, 'Century Gothic', CenturyGothic, AppleGothic, sans-serif;
+    top: 220px;
+    margin-left: 370px;
+    font-size: 10px;
     min-width: 20%;
     max-width: 24%;
     position: absolute;

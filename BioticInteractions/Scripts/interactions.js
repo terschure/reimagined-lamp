@@ -349,39 +349,66 @@ function connectedNodes(id) {
                 objects.push(o.target);
                 d3.select("#details").append("p")
                     .text(".. is a " + o.interaction + " of " + o.target.speciesName + "  ")
-                    .append("text");
-                // on click e.g. "ref" show the literature reference corresponding to the interaction
-                // getJSONtext();
-
+                        .on("click", function() {
+                            d3.select("#references").remove();
+                            references = [];
+                            getReferences(o.source.speciesName, o.target.speciesName)
+                        })
+                        .on("mouseover", function() {
+                            d3.select(this).style("font-weight", "bolder")
+                                .style("cursor", "pointer");
+                        })
+                        .on("mouseout", function() { d3.select(this).style("font-weight", "normal"); });
             }
             else if(d === o.target) {
                 objects.push(o.source);
                 d3.select("#details").append("p")
-                    .text(o.source.speciesName + " is a " + o.interaction + " of this species");
-
-                // on click e.g. "ref" show the literature reference corresponding to the interaction
-                // getJSONtext();
+                    .text(o.source.speciesName + " is a " + o.interaction + " of this species")
+                        .on("click", function() {
+                            d3.select("#references").remove();
+                            references = [];
+                            getReferences(o.source.speciesName, o.target.speciesName)
+                        })
+                        .on("mouseover", function() {
+                            d3.select(this).style("font-weight", "bolder")
+                                .style("cursor", "pointer");
+                        })
+                        .on("mouseout", function() { d3.select(this).style("font-weight", "normal"); });
             };
             return d == o.source || d == o.target ? 0.95 : 0.1;
         });
 
-        function getJSONtext(sourceTaxon, targetTaxon) {
-            // TODO: change sourceTaxon and targetTaxon to string
-            var globiAPI = "http://api.globalbioticinteractions.org/interaction?sourceTaxon=" + sourceTaxon + "&targetTaxon=" + targetTaxon + "&field=study_citation&field=study_doi&includeObservations=true";
+        references = [];
+        function getReferences(sourceTaxon, targetTaxon) {
+            // create literature reference div
+            var div = d3.select("body").append("div")
+                .attr("id", "references")
+                .append("text")
+                .text("Literature");
+
+            // change sourceTaxon and targetTaxon to URI string
+            var source = encodeURIComponent(sourceTaxon.trim())
+            var target = encodeURIComponent(targetTaxon.trim())
+            var globiAPI = "http://api.globalbioticinteractions.org/interaction?sourceTaxon=" + source + "&targetTaxon=" + target + "&field=study_citation&field=study_doi&includeObservations=true";
             $.getJSON( globiAPI, {
                 format: "json"
             })
             .done(function( data ) {
-                var references = [];
                 $.each( data.data, function( i, item ) {
-                    console.log("Item:", item[0])
+                    // make sure that there is just one reference of each in the reference list
                     if ($.inArray(item[0], references) == -1) {
                         references.push(item[0]);
                     }
                 });
                 references.forEach(function(d){
-                    d3.select("#details").append("p").text(d);
-                })
+                    // append each reference to the div to appear on screen
+                    d3.select("#references").append("p").text(d);
+                });
+                // refer to the website if there are no references returned from the getJSON query
+                if (references.length == 0) {
+                    d3.select("#references").append("p").text("There seem to be no references available")
+                        .append("p").html("Please check: <a href='http://globalbioticinteractions.org/?sourceTaxon=" + source + "'target='_blank'> literature on all " + sourceTaxon + " interactions</a>");
+                }
             });
         }
 
@@ -409,6 +436,7 @@ function removeDetails() {
     d3.select("#numbers").style("opacity", 0.7);
     // remove previous details
     d3.select("#details").remove();
+    d3.select("#references").remove();
     highlight = 0;
 };
 
