@@ -2,6 +2,8 @@
 ### A programming project by Anneke ter Schure
 Part of the minor Programming of the University of Amsterdam
 
+[Play with the end result!] (http://rawgit.com/terschure/reimagined-lamp/master/BioticInteractions/index.html)
+
 Who eats who? And how do these animals, plants, fungi or bacteria relate? This visualisation shines a light on different types of biotic interactions and consequently shows how everything and everyone on earth has a vital role.
 
 #### Many small things make something big
