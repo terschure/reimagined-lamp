@@ -9,7 +9,7 @@
 nodeOpacity = 0.8;
 linkOpacity = 0.3;
 linkDistance = 100;
-layout = "force";
+layout = "cluster";
 colorNodes = d3.scale.ordinal()
     .domain(["Insects", "Mammals", "Birds", "Plants", "Fungi", "Viruses", "Other"])
     .range(["#FFC000", "#FF0000", "#8D1BFF", "#007800", "#ECFFB1", "#B30065", "#838383"]);
@@ -49,11 +49,10 @@ d3.json("Data/bioInteractions.json", function(error, json) {
 
         // Run the layout a fixed number of times.
         force.start();
-        for (var i = 35; i > 0; --i) force.tick();
+        for (var i = 0; i < 30; i++) force.tick();
         force.stop();
         loading.remove();
-    }, 3000);
-
+    }, 10);
 });
 
 var setNetwork = function() {
@@ -117,6 +116,7 @@ var setLayout = function(layout, width, height) {
         force.on("tick", tick)
             .linkStrength(0.001)
             .charge(-1.5)
+            // .on("start", start)
             .start();
 
         function tick(e) {
@@ -148,8 +148,31 @@ var setLayout = function(layout, width, height) {
         force.distance(40)
             .linkStrength(0.2)
             .distance(linkDistance)
+            // .on("start", start)
             .charge(-8)
             .start();
+
+        // function start() {
+        //     var ticksPerRender = 3;
+        //     requestAnimationFrame(function render() {
+        //         for (var i = 0; i < ticksPerRender; i++) {
+        //             force.tick();
+        //         }
+        //         link.attr("x1", function(d) { return d.source.x; })
+        //             .attr("y1", function(d) { return d.source.y; })
+        //             .attr("x2", function(d) { return d.target.x; })
+        //             .attr("y2", function(d) { return d.target.y; });
+        //
+        //         node.transition()
+        //             .duration(400)
+        //             .attr("cx", function(d) { return d.x; })
+        //             .attr("cy", function(d) { return d.y; });
+        //
+        //         if (force.alpha() > 0.05) {
+        //             requestAnimationFrame(render);
+        //         }
+        //     })
+        // }
 
         force.on("tick", function() {
             link.attr("x1", function(d) { return d.source.x; })
@@ -223,7 +246,7 @@ var updateNetwork = function() {
 function updateLinks(svg) {
     // remove existing links
     d3.select("#links").transition()
-        .duration(500)
+        .duration(100)
         .remove();
 
     // create the links
@@ -280,7 +303,7 @@ function updateNodes(svg) {
 
     // remove existing nodes
     d3.select("#nodes").transition()
-        .duration(500)
+        .duration(110)
         .remove();
 
     // create the nodes to sit on top of the links
